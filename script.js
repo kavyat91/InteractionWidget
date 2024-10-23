@@ -2374,7 +2374,7 @@ function sendQuickReplies(quickReplies) {
         var cmdName = lpTag.agentSDK.cmdNames.writeSC;
         var quickReply1 = document.getElementById('quickReply1').value;
         var quickReply2 = document.getElementById('quickReply2').value;
-        var text1 = `Please select Preferrable Time Slot for ${formattedDate}`
+        var text1 = `Please select your preferred time slot for ${formattedDate}`
 
         var data = {
             json: {
@@ -2415,7 +2415,7 @@ function sendQuickReplies(quickReplies) {
         var quickReply2 = document.getElementById('quickReply2').value;
         var quickReply3 = document.getElementById('quickReply3').value;
 
-        var text1 = `Please select Preferrable Time Slot for ${formattedDate}`
+        var text1 = `Please select your preferred time slot for ${formattedDate}`
 
         var data = {
             json: {
@@ -2466,7 +2466,7 @@ function sendQuickReplies(quickReplies) {
         var quickReply3 = document.getElementById('quickReply3').value;
         var quickReply4 = document.getElementById('quickReply4').value;
 
-        var text1 = `Please select Preferrable Time Slot for ${formattedDate}`
+        var text1 = `Please select your preferred time slot for ${formattedDate}`
 
         var data = {
             json: {
@@ -2528,7 +2528,7 @@ function sendQuickReplies(quickReplies) {
         var quickReply4 = document.getElementById('quickReply4').value;
         var quickReply5 = document.getElementById('quickReply5').value;
 
-        var text1 = `Please select Preferrable Time Slot for ${formattedDate}`
+        var text1 = `Please select your preferred time slot for ${formattedDate}`
 
         var data = {
             json: {
@@ -2612,6 +2612,9 @@ function sendQuickReplies(quickReplies) {
         console.log("formattedStartDate" + formattedStartDate);
         console.log("formattedEndDate" + formattedEndDate);
 
+        const formatStartDate = formatReadableDate(startDate);
+        const formatEndDate = formatReadableDate(endDate);
+
         // Google Calendar URL
         const googleCalendarUrl = `https://www.google.com/calendar/render?action=TEMPLATE&text=Health+Care+Appointment&dates=${formattedStartDate}/${formattedEndDate}&location=${encodeURIComponent(eventLocation)}`;
 
@@ -2658,7 +2661,7 @@ END:VCALENDAR
                 "tag": "generic",
                 "elements": [{
                     "type": "text",
-                    "text": "Click the buttons below to add the appointment to your calendar."
+                    "text": `Your appointment is confirmed on ${formatStartDate} to ${formatEndDate}.`
                 }, {
                     "type": "button",
                     "title": "Add to Google Calendar",
@@ -2709,6 +2712,40 @@ END:VCALENDAR
         const startDate = new Date(startDateStr);
         startDate.setMinutes(startDate.getMinutes() + duration);
         return startDate;
+    }
+
+    function formatReadableDate(dateStr) {
+        const date = new Date(dateStr);
+
+        // Get day of the week
+        const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+        const dayOfWeek = daysOfWeek[date.getDay()];
+
+        // Get month
+        const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        const month = months[date.getMonth()];
+
+        // Get day and time
+        const day = date.getDate();
+        let hours = date.getHours();
+        let minutes = date.getMinutes();
+        let ampm = "am";
+
+        // Convert hours to 12-hour format and set am/pm
+        if (hours >= 12) {
+            ampm = "pm";
+            if (hours > 12) {
+                hours -= 12;
+            }
+        } else if (hours === 0) {
+            hours = 12;
+        }
+
+        // Ensure minutes are in two-digit format
+        minutes = minutes < 10 ? "0" + minutes : minutes;
+
+        // Format the date as "Tue Oct 29 09:00 am"
+        return `${dayOfWeek} ${month} ${day} ${hours}:${minutes} ${ampm}`;
     }
 
 }
