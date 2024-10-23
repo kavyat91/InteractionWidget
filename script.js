@@ -118,7 +118,7 @@ if (preferredDateInput) {
             var cmdName = lpTag.agentSDK.cmdNames.writeSC;
             var quickReply1 = document.getElementById('quickReply1').value;
             var quickReply2 = document.getElementById('quickReply2').value;
-            var text1=`Please select Preferrable Time Slot for ${formattedDate}`
+            var text1=`Please select your preferred time slot for ${formattedDate}`
 
             var data = {
                 json:{
@@ -165,7 +165,7 @@ if (preferredDateInput) {
             var quickReply2 = document.getElementById('quickReply2').value;
             var quickReply3 = document.getElementById('quickReply3').value;
 
-            var text1=`Please select Preferrable Time Slot for ${formattedDate}`
+            var text1=`Please select your preferred time slot for ${formattedDate}`
 
             var data = {
                 json:{
@@ -225,7 +225,7 @@ if (preferredDateInput) {
             var quickReply3 = document.getElementById('quickReply3').value;
             var quickReply4 = document.getElementById('quickReply4').value;
 
-            var text1=`Please select Preferrable Time Slot for ${formattedDate}`
+            var text1=`Please select your preferred time slot for ${formattedDate}`
 
             var data = {
                 json:{
@@ -300,7 +300,7 @@ if (preferredDateInput) {
             var quickReply4 = document.getElementById('quickReply4').value;
             var quickReply5 = document.getElementById('quickReply5').value;
 
-            var text1=`Please select Preferrable Time Slot for ${formattedDate}`
+            var text1=`Please select your preferred time slot for ${formattedDate}`
 
             var data = {
                 json:{
