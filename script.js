@@ -446,7 +446,7 @@ END:VCALENDAR
             "elements": [
                 {
                     "type": "text",
-                    "text": "Appointment is confirmed on " + formattedDate + " from" + startDate + " to" + endDate + " ."
+                    "text": "Appointment is confirmed on " + " " + formattedDate + " from" + " " + toLocaleString(formattedStartDate) + " " +"to" + toLocaleString(formattedEndDate) + " ."
                 },
                 {
                     "type": "button",
