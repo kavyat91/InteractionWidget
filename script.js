@@ -410,7 +410,7 @@ PRODID:-//Your Organization//Your Product//EN
 CALSCALE:GREGORIAN
 METHOD:PUBLISH
 BEGIN:VEVENT
-SUMMARY:Health Care Appointment Confirmation
+SUMMARY:Health Care Appointment
 LOCATION:${eventLocation}
 DTSTART:${formatDateForICS(startDate)}
 DTEND:${formatDateForICS(endDate)}
@@ -446,7 +446,7 @@ END:VCALENDAR
             "elements": [
                 {
                     "type": "text",
-                    "text": "Appointment confirmed on" + formattedDate} + "from" + formattedStartDate + "to" + formattedEndDate + "."
+                    "text": "Appointment is confirmed on" + formattedDate + "from" + formattedStartDate + "to" + formattedEndDate +"."
                 },
                 {
                     "type": "button",
