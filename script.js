@@ -2369,6 +2369,33 @@ function sendQuickReplies(quickReplies) {
     } else {
         alert("Please enter a preferred date.");
     }
+    if (numQuickReplies == "1") {
+        var cmdName = lpTag.agentSDK.cmdNames.writeSC;
+        var quickReply1 = document.getElementById('quickReply1').value;
+        var text1 = `Please select your preferred time slot for ${formattedDate}`
+
+        var data = {
+            json: {
+                "type": "vertical",
+                "tag": "generic",
+                "elements": [{
+                    "type": "text",
+                    "text": text1,
+                    "tag": "title"
+                }, {
+                    "type": "button",
+                    "title": quickReply1,
+                    "click": {
+                        "actions": [{
+                            "type": "publishText",
+                            "text": `${quickReply1} ${formattedDate}`
+                        }]
+                    }
+                }]
+            }
+        };
+        lpTag.agentSDK.command(cmdName, data, notifyWhenDone);
+    }
 
     if (numQuickReplies == "2") {
         var cmdName = lpTag.agentSDK.cmdNames.writeSC;
@@ -2606,46 +2633,37 @@ function sendQuickReplies(quickReplies) {
         const endDate = calculateEndTime(startDate, duration);
 
         // Format the dates for the calendar links
-        const formattedStartDate = formatDateForCalendar(startDate);
-        const formattedEndDate = formatDateForCalendar(endDate);
-
-        console.log("formattedStartDate" + formattedStartDate);
-        console.log("formattedEndDate" + formattedEndDate);
+        const formattedStartDate = formatDateForGoogleCalendar(startDate);
+        const formattedEndDate = formatDateForGoogleCalendar(endDate);
 
         const formatStartDate = formatReadableDate(startDate);
         const formatEndDate = formatReadableDate(endDate);
 
-        // Google Calendar URL
+        // Google Calendar URL (Use the correctly formatted local time)
         const googleCalendarUrl = `https://www.google.com/calendar/render?action=TEMPLATE&text=Health+Care+Appointment&dates=${formattedStartDate}/${formattedEndDate}&location=${encodeURIComponent(eventLocation)}`;
 
-        // Apple Calendar (.ics) URL encoded
-        const appleCalendarUrl = `data:text/calendar;charset=utf-8,` + encodeURIComponent(`
+        console.log("googleCalendarUrl= " + googleCalendarUrl);
+
+        // Format the dates for the ICS file
+        const formattedStartDate1 = formatDateForICS(startDate);
+        const formattedEndDate1 = formatDateForICS(endDate);
+
+        // Create ICS content
+        const icsContent = `
 BEGIN:VCALENDAR
 VERSION:2.0
-PRODID:-//Your Organization//Your Product//EN
-CALSCALE:GREGORIAN
-METHOD:PUBLISH
 BEGIN:VEVENT
 SUMMARY:Health Care Appointment
 LOCATION:${eventLocation}
-DTSTART:${formatDateForICS(startDate)}
-DTEND:${formatDateForICS(endDate)}
-BEGIN:VTIMEZONE
-TZID:America/Chicago
-BEGIN:DAYLIGHT
-TZOFFSETFROM:-0600
-TZOFFSETTO:-0500
-DTSTART:20220313T020000
-END:DAYLIGHT
-BEGIN:STANDARD
-TZOFFSETFROM:-0500
-TZOFFSETTO:-0600
-DTSTART:20211107T020000
-END:STANDARD
-END:VTIMEZONE
+DTSTART:${formattedStartDate1}
+DTEND:${formattedEndDate1}
 END:VEVENT
 END:VCALENDAR
-    `.trim());
+    `.trim();
+
+        // Encode the ICS content to create a data URI
+        const encodedUri = encodeURI('data:text/calendar;charset=utf-8,' + icsContent);
+        console.log("EncodedURL=" + encodedUri);
 
         // Send structured content with two buttons (Google and Apple Calendar)
         var notifyWhenDone = function(err) {
@@ -2661,7 +2679,7 @@ END:VCALENDAR
                 "tag": "generic",
                 "elements": [{
                     "type": "text",
-                    "text": `Your appointment is confirmed on ${formatStartDate} to ${formatEndDate}.`
+                    "text": `Your appointment is confirmed on ${formatStartDate}.`
                 }, {
                     "type": "button",
                     "title": "Add to Google Calendar",
@@ -2677,7 +2695,7 @@ END:VCALENDAR
                     "click": {
                         "actions": [{
                             "type": "link",
-                            "uri": appleCalendarUrl
+                            "uri": encodedUri
                         }]
                     }
                 }]
@@ -2687,24 +2705,20 @@ END:VCALENDAR
         lpTag.agentSDK.command(cmdName, data, notifyWhenDone);
     });
 
-    // Helper function to format dates for calendar links
-    function formatDateForCalendar(dateStr) {
+    // Helper function to format dates for Google Calendar (local time format)
+    function formatDateForGoogleCalendar(dateStr) {
         const date = new Date(dateStr);
-        // Ensure the date is in the CST timezone
-        date.setHours(date.getHours() - 6);
-        // Adjust for GMT-6
-        return date.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
-        // Format as YYYYMMDDTHHMMSSZ
-    }
 
-    // Helper function to format dates for ICS files
-    function formatDateForICS(dateStr) {
-        const date = new Date(dateStr);
-        // Ensure the date is in the CST timezone
-        date.setHours(date.getHours() - 6);
-        // Adjust for GMT-6
-        return date.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
-        // Format as YYYYMMDDTHHMMSSZ
+        // Get the local time values (no conversion to UTC)
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        // Months are 0-indexed
+        const day = String(date.getDate()).padStart(2, '0');
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+
+        // Return the formatted date string for Google Calendar (YYYYMMDDTHHMMSS)
+        return `${year}${month}${day}T${hours}${minutes}00`;
     }
 
     // Helper function to calculate end time based on duration (in minutes)
@@ -2747,5 +2761,13 @@ END:VCALENDAR
         // Format the date as "Tue Oct 29 09:00 am"
         return `${dayOfWeek} ${month} ${day} ${hours}:${minutes} ${ampm}`;
     }
-
+    // function formatDateForICS(dateStr) {
+    //     const date = new Date(dateStr);
+    //     return date.toISOString().replace(/[-:]/g, '').split('.')[0]; // Format as YYYYMMDDTHHMMSS
+    // }
+    function formatDateForICS(dateStr) {
+        const date = new Date(dateStr);
+        return date.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+        // Ensure proper format with Z for UTC
+    }
 }
