@@ -2295,7 +2295,7 @@ document.getElementById('generateButton').addEventListener('click', function() {
       //  input.type = 'text';
        // input.id = `quickReply${i}`;
         input.type = 'time';
-        input.placeholder = `Enter Option ${i}`;
+      //  input.placeholder = `Enter Option ${i}`;
         quickRepliesContainer.appendChild(input);
     }
 
